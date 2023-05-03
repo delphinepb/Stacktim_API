@@ -168,6 +168,32 @@ namespace Stacktim.Model
             }
         }
 
+        public ProjetEntity GetProjetByIdConnaissance(int idConnaissance)
+        {
 
+            var projet = new ProjetEntity();
+            var oSqlConnection = new SqlConnection(_configuration?.GetConnectionString("SQL"));
+            var oSqlCommand = new SqlCommand("Select * from projet as p inner join statutprojet as s on p.idstatut = s.idstatut where idProjet = @Id");
+            var oSqlParam = new SqlParameter("@Id", idConnaissance);
+
+            oSqlCommand.Parameters.Add(oSqlParam);
+            oSqlConnection.Open();
+            oSqlCommand.Connection = oSqlConnection;
+            var oSqlDataReader = oSqlCommand.ExecuteReader();
+
+            while (oSqlDataReader.Read())
+            {
+                projet.idProjet = (int)oSqlDataReader["idProjet"];
+                projet.idStatut = (int)oSqlDataReader["idStatut"];
+                projet.descriptif = (string)oSqlDataReader["descriptif"];
+                projet.dateCreation = (DateTime)oSqlDataReader["dateCreation"];
+                projet.createur = (string)oSqlDataReader["createur"];
+                projet.etatProjet = (string)oSqlDataReader["etatProjet"];
+
+            };
+            oSqlDataReader.Close();
+            oSqlConnection.Close();
+            return projet;
+        }
     }
 }

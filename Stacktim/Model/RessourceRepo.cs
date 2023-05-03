@@ -174,5 +174,35 @@ namespace Stacktim.Model
                 oSqlConnection.Close();
             }
         }
+
+        public RessourceEntity GetRessByIdConnaissance(int idConnaissance)
+        {
+
+
+            var Ressource = new RessourceEntity();
+            var oSqlConnection = new SqlConnection(_configuration?.GetConnectionString("SQL"));
+            var oSqlCommand = new SqlCommand("Select * from ressource as ress inner join typeressource as typer on ress.idtyper = typer.idtyper inner join connaissance as co on ress.idconnaissance = co.idconnaissance where co.idConnaissance = @Id");
+            var oSqlParam = new SqlParameter("@Id", idConnaissance);
+
+            oSqlCommand.Parameters.Add(oSqlParam);
+            oSqlConnection.Open();
+            oSqlCommand.Connection = oSqlConnection;
+            var oSqlDataReader = oSqlCommand.ExecuteReader();
+
+            while (oSqlDataReader.Read())
+            {
+                Ressource.idRessource = (int)oSqlDataReader["idressource"];
+                Ressource.idTypeR = (int)oSqlDataReader["idTypeR"];
+                Ressource.idConnaissance = (int)oSqlDataReader["idConnaissance"];
+                Ressource.typeRess = (string)oSqlDataReader["typeRessource"];
+                Ressource.datePublication = (DateTime)oSqlDataReader["datePublication"];
+                Ressource.createur = (string)oSqlDataReader["createur"];
+                Ressource.contenu = (string)oSqlDataReader["contenu"];
+            };
+            oSqlDataReader.Close();
+            oSqlConnection.Close();
+            return Ressource;
+        }
+
     }
 }

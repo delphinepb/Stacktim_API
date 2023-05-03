@@ -41,6 +41,34 @@ namespace Stacktim.Model
             return connaissance;
         }
 
+        public ConnaissanceEntity GetConnaissanceById(int idConnaissance)
+        {
+
+            var connaissance = new ConnaissanceEntity();
+            var oSqlConnection = new SqlConnection(_configuration?.GetConnectionString("SQL"));
+            var oSqlCommand = new SqlCommand("Select * from connaissance as co inner join categorie as ca on co.idConnaissance = ca.idCategorie where idConnaissance = @Id");
+            var oSqlParam = new SqlParameter("@Id", idConnaissance);
+
+            oSqlCommand.Parameters.Add(oSqlParam);
+            oSqlConnection.Open();
+            oSqlCommand.Connection = oSqlConnection;
+            var oSqlDataReader = oSqlCommand.ExecuteReader();
+
+            while (oSqlDataReader.Read())
+            {
+                connaissance.idConnaissance = (int)oSqlDataReader["idConnaissance"];
+                connaissance.idCategorie = (int)oSqlDataReader["idCategorie"];
+                connaissance.nom = (string)oSqlDataReader["NOM"];
+                connaissance.categorie = (string)oSqlDataReader["categorie"];
+                connaissance.descriptionCourte = (string)oSqlDataReader["descriptionCourte"];
+                connaissance.descriptionLongue = (string)oSqlDataReader["descriptionLongue"];
+
+            };
+            oSqlDataReader.Close();
+            oSqlConnection.Close();
+            return connaissance;
+        }
+
         public bool Update(ConnaissanceEntity connaissanceEntity)
         {
             try
@@ -98,18 +126,18 @@ namespace Stacktim.Model
         public int Insert(ConnaissanceEntity connaissanceEntity)
         {
             var oSqlConnection = new SqlConnection(_configuration?.GetConnectionString("SQL"));
-            var oSqlParam2 = new SqlParameter("@IdCategorie", connaissanceEntity.idCategorie);
-            var oSqlParam3 = new SqlParameter("@Nom", connaissanceEntity.nom);
-            var oSqlParam4 = new SqlParameter("@Categorie", connaissanceEntity.categorie);
-            var oSqlParam5 = new SqlParameter("@descriptionC", connaissanceEntity.descriptionCourte);
-            var oSqlParam6 = new SqlParameter("@descriptionL", connaissanceEntity.descriptionLongue);
+            var oSqlParam = new SqlParameter("@idCategorie", connaissanceEntity.idCategorie);
+            var oSqlParam1 = new SqlParameter("@Nom", connaissanceEntity.nom);
+            var oSqlParam2 = new SqlParameter("@Categorie", connaissanceEntity.categorie);
+            var oSqlParam3 = new SqlParameter("@descriptionC", connaissanceEntity.descriptionCourte);
+            var oSqlParam4 = new SqlParameter("@descriptionL", connaissanceEntity.descriptionLongue);
             oSqlConnection.Open();
             var oSqlTransaction = oSqlConnection.BeginTransaction();
             try
             {
-                var oSqlCommand = new SqlCommand("Insert Into categorie(idCategorie,nom,categorie,descriptionCourte, descriptionLongue) Values (@IdCategorie,@Nom, @Categorie, @descritpionC, @descritpionL); Select @@Identity;");
-                oSqlCommand.Parameters.Add(oSqlParam2);
-                oSqlCommand.Parameters.AddRange(new SqlParameter[] { oSqlParam3, oSqlParam4, oSqlParam5, oSqlParam6 });
+                var oSqlCommand = new SqlCommand("Insert Into connaissance(idCategorie,categorie, nom, descriptionCourte, descriptionLongue) Values (@idCategorie,@Categorie, @Nom, @descriptionC, @descriptionL); Select @@Identity;");
+                oSqlCommand.Parameters.Add(oSqlParam);
+                oSqlCommand.Parameters.AddRange(new SqlParameter[] { oSqlParam1, oSqlParam2, oSqlParam3, oSqlParam4 });
 
                 oSqlCommand.Connection = oSqlConnection;
                 oSqlCommand.Transaction = oSqlTransaction;
